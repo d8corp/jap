@@ -1,0 +1,24 @@
+{
+  "name": "jap",
+  "version": "0.0.1",
+  "description": "JSON Action Protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d8corp/jap.git"
+  },
+  "keywords": [
+    "JSON",
+    "REST",
+    "API"
+  ],
+  "author": "deight",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d8corp/jap/issues"
+  },
+  "homepage": "https://github.com/d8corp/jap#readme"
+}
