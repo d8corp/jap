@@ -308,4 +308,66 @@ describe('jap', () => {
       });
     });
   });
+  describe('async', () => {
+    it('function', async () => {
+      const resolve = value => ({error: false, value});
+      const reject = (command, handler, error) => ({error: error || true, command, handler});
+
+      const handler1 = async e => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return e
+      };
+
+      const handler2 = async () => {
+        throw Error('test')
+      };
+
+      const result1 = await jap(1, handler1, resolve, reject);
+      const result2 = await jap(1, handler2, resolve, reject);
+
+      expect(result1).toEqual({
+        error: false,
+        value: 1
+      });
+      expect(result2).toEqual({
+        error: Error('test'),
+        handler: handler2,
+        command: 1
+      });
+    });
+    it('object', async () => {
+      const resolve = value => ({error: false, value});
+      const reject = (command, handler, error) => ({error: error || true, command, handler});
+
+      const handler = {
+        test1: async e => {
+          await new Promise(resolve => setTimeout(resolve, 10));
+          return e
+        },
+        test2: async () => {
+          throw Error('test')
+        }
+      };
+
+      const promises = [];
+
+      const result = jap({test1: 1, test2: 2}, handler, resolve, reject, promises);
+
+      expect(promises.length).toBe(2);
+
+      await Promise.all(promises);
+
+      expect(result).toEqual({
+        test1: {
+          error: false,
+          value: 1
+        },
+        test2: {
+          error: Error('test'),
+          command: 2,
+          handler: handler.test2
+        }
+      });
+    });
+  });
 });
