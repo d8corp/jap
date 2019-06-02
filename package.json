@@ -1,6 +1,6 @@
 {
   "name": "jap",
-  "version": "0.0.1",
+  "version": "0.0.1-dev",
   "description": "JSON Action Protocol",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/d8corp/jap/issues"
   },
-  "homepage": "https://github.com/d8corp/jap#readme"
+  "homepage": "https://github.com/d8corp/jap#readme",
+  "dependencies": {
+    "type-filter": "^3.5.1"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0"
+  }
 }
