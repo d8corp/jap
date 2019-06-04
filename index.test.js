@@ -20,6 +20,9 @@ describe('jap', () => {
     it('function', () => {
       expect(jap(3, x => x * x)).toBe(9);
     });
+    it('spread', () => {
+      expect(jap([3, 5], (x, y) => x + y)).toBe(8);
+    });
     describe('array', () => {
       it('empty', () => {
         expect(jap(3, [])).toBe(3);

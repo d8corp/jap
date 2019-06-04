@@ -4,14 +4,14 @@ var typeFilter = require('type-filter/typeFilter');
 var yes = require('type-filter/handlers/yes');
 
 /**
- * @param {*} [command]
+ * @param {*} [request]
  * @param {*} [handler]
  * @param {function(value)} [resolve]
- * @param {function(command,handler,error?)} [reject]
+ * @param {function(request,handler,error?)} [reject]
  * @param {Array<Promise>} [promises]
  * @param {Object} [options]
  * */
-function jap (command, handler, resolve, reject, promises, options) {
+function jap (request, handler, resolve, reject, promises, options) {
   if (!resolve) {
     resolve = yes
   }
@@ -20,52 +20,52 @@ function jap (command, handler, resolve, reject, promises, options) {
   }
   return typeFilter(handler, {
     object: function (handler, options) {
-      return typeFilter(command, {
-        array: function (request) {
-          const length = request.length;
+      return typeFilter(request, {
+        array: function (req) {
+          const length = req.length;
           for (let i = 0; i < length; i++) {
-            jap(request[i], handler, resolve, reject, promises, options);
+            jap(req[i], handler, resolve, reject, promises, options);
           }
-          return command
+          return request
         },
-        object: function (request) {
-          for (const key in request) {
+        object: function (req) {
+          for (const key in req) {
             if (key in Object.prototype) continue;
-            var result = jap(request[key], handler[key], resolve, reject, promises);
+            var result = jap(req[key], handler[key], resolve, reject, promises);
             if (result && result.then) {
               result.then(function (v) {
-                return request[key] = v
+                return req[key] = v
               }, function (v) {
-                return request[key] = v
+                return req[key] = v
               })
             } else {
-              request[key] = result;
+              req[key] = result;
             }
           }
-          return command
+          return request
         },
         other: function () {
-          return reject(command, handler);
+          return reject(request, handler);
         }
       })
     },
     function: function () {
-      return typeFilter(command, {
-        array: function (command) {
+      return typeFilter(request, {
+        array: function (request) {
           try {
-            return resolve(handler.apply(handler, command))
+            return resolve(handler.apply(handler, request))
           } catch (e) {
-            return reject(command, handler, e)
+            return reject(request, handler, e)
           }
         },
         other: function () {
           try {
-            var result = handler(command);
+            var result = handler(request);
             if (result && result.then) {
               result = result.then(function (v) {
                 return resolve(v);
               }, function (e) {
-                return reject(command, handler, e);
+                return reject(request, handler, e);
               });
               if (promises) {
                 promises.push(result)
@@ -75,18 +75,18 @@ function jap (command, handler, resolve, reject, promises, options) {
               return resolve(result)
             }
           } catch (e) {
-            return reject(command, handler, e)
+            return reject(request, handler, e)
           }
         }
       })
     },
     array: function () {
-      return handler.reduce(function (command, handler) {
-        return jap(command, handler, resolve, reject, promises)
-      }, command)
+      return handler.reduce(function (request, handler) {
+        return jap(request, handler, resolve, reject, promises)
+      }, request)
     },
     other: function () {
-      return reject(command, handler);
+      return reject(request, handler);
     }
   }, options);
 }
