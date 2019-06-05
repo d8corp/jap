@@ -87,17 +87,14 @@ function jap (handler, request, resolve, reject, promises, options) {
       }
       return request;
     },
-    string: resolveHandler,
-    number: resolveHandler,
-    boolean: resolveHandler,
-    null: resolveHandler,
+    string: resolve,
+    number: resolve,
+    boolean: resolve,
+    null: resolve,
     other: function () {
       return reject(request, Error('Missed handler'), handler);
     }
   }, options);
-  function resolveHandler () {
-    return resolve(handler);
-  }
 }
 
 module.exports = jap;
