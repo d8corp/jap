@@ -18,9 +18,6 @@ function jap (handler, request, resolve, reject, promises, options) {
   if (!reject) {
     reject = yes
   }
-  var resolveHandler = function () {
-    return resolve(handler);
-  };
   return typeFilter(handler, {
     object: function (handler, options) {
       return typeFilter(request, {
@@ -85,13 +82,8 @@ function jap (handler, request, resolve, reject, promises, options) {
     },
     array: function () {
       const length = handler.length;
-      let i = 0;
-      try {
-        while (i < length) {
-          request = jap(handler[i++], request, resolve, reject, promises)
-        }
-      } catch (e) {
-        return reject(request, e, handler[i - 1]);
+      for (var i = 0; i < length; i++) {
+        request = jap(handler[i], request, resolve, reject, promises)
       }
       return request;
     },
@@ -103,6 +95,9 @@ function jap (handler, request, resolve, reject, promises, options) {
       return reject(request, Error('Missed handler'), handler);
     }
   }, options);
+  function resolveHandler () {
+    return resolve(handler);
+  }
 }
 
 module.exports = jap;
