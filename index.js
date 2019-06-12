@@ -12,6 +12,9 @@ var yes = require('type-filter/handlers/yes');
  * @param {Object} [options]
  * */
 function jap (handler, request, resolve, reject, promises, options) {
+  if (arguments.length < 2) {
+    request = null
+  }
   if (!resolve) {
     resolve = yes
   }

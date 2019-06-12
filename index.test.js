@@ -54,14 +54,18 @@ describe('jap', () => {
   });
   describe('reject', () => {
     it('undeclared handler', () => {
-      expect(jap()).toBe(undefined);
-      expect(jap(undefined)).toBe(undefined);
-      expect(jap(Symbol())).toBe(undefined);
-      expect(jap(new Map())).toBe(undefined);
-      expect(jap(new Set())).toBe(undefined);
-      expect(jap(Error('test'))).toBe(undefined);
-      expect(jap({})).toEqual(undefined);
-      expect(jap([])).toEqual(undefined);
+      expect(jap()).toBe(null);
+      expect(jap(undefined)).toBe(null);
+      expect(jap(NaN)).toBe(null);
+      expect(jap(Symbol())).toBe(null);
+      expect(jap(new Map())).toBe(null);
+      expect(jap(new Set())).toBe(null);
+      expect(jap(Error('test'))).toBe(null);
+      expect(jap(new class {} ())).toBe(null);
+      expect(jap([])).toEqual(null);
+      expect(jap([undefined])).toEqual(null);
+      expect(jap([undefined, 1, undefined, undefined])).toEqual(1);
+      expect(jap({})).toEqual(null);
     });
     it('wrong nesting', () => {
       expect(jap({settings: {version: '1.0.0'}}, {settings: null})).toEqual({settings: null});
