@@ -7,7 +7,7 @@ J.A.P. provides you running of all actions you need in one request via json.*
 *The function helps you handle any J.A.P. request.*  
 `jap (`  
 1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
-2. \[, [request](#japhandlerrequest): json primitive | [requestCollection](#japhandlerrequestCollection): array | [requestList](#requestList): object \]  
+2. \[, [request](#japhandler-request): json primitive | [requestCollection](#japhandler-requestCollection): array | [requestList](#requestList): object \]  
 3. \[, [resolve](#resolve): function \]
 4. \[, [reject](#reject): function \]
 5. \[, [promises](#promises): array \]
@@ -18,6 +18,15 @@ J.A.P. provides you running of all actions you need in one request via json.*
 If all rules are followed and handler is finished without errors then the result will go
 through resolve callback function.
 You will see all rules in this section.
+But firstly lets look at the resolve callback function.  
+`resolve` gets only one default argument, it is result of handling.
+Lets keep here our default resolve function and go through the first arguments of `jap`.
+```javascript
+const resolve = result => ({
+  success: true,
+  result
+})
+```
 ### jap(`primitiveHandler`)
 `primitiveHandler` is any primitive value of json `null`, `boolean`, `number` or `string`.  
 `jap` with `primitiveHandler` always returns the handler.
@@ -36,7 +45,6 @@ jap(() => 1) // returns 1
 jap(() => {}) // returns undefined
 ``` 
 ### jap(handler, `request`)
-`request` is the second argument of `jap`.  
 `request` is a parsed json from another app.  
 You may handle `request` by `handler`.  
 `handler` gets `request` as the first argument.
@@ -52,9 +60,15 @@ const sum = (x, y) => x + y
 jap(sum, [1, 2]) // returns 3
 jap(sum, [3, 5]) // returns 8
 ```
+### jap(handler, request, `resolve`)
+And now finally we can look at [resolve](#resolve) in action
+```javascript
+const sum = (x, y) => x + y
+jap(sum, [1, 2], resolve) // returns {success: true, result: 3}
+```
 
 ## Reject
-If any rules are failed or handler is finished with an error then the result will going
+If any rules are failed or handler is finished with an error then the result will go
 through reject callback function.
 You will see all rules for that in this section.
 ### Wrong handler
