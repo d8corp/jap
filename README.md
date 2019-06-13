@@ -6,12 +6,12 @@ J.A.P. provides you running of all actions you need in one request via json.*
 ### About `jap` function
 *The function helps you handle any J.A.P. request.*  
 `jap (`  
-0. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
-0. \[, [request](#japhandlerrequest): json primitive | [requestCollection](#japhandlerrequestCollection): array | [requestList](#requestList): object \]  
-0. \[, [resolve](#resolve): function \]
-0. \[, [reject](#reject): function \]
-0. \[, [promises](#promises): array \]
-0. \[, [options](#options): object \]
+1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
+2. \[, [request](#japhandlerrequest): json primitive | [requestCollection](#japhandlerrequestCollection): array | [requestList](#requestList): object \]  
+3. \[, [resolve](#resolve): function \]
+4. \[, [reject](#reject): function \]
+5. \[, [promises](#promises): array \]
+6. \[, [options](#options): object \]
 
 `)`
 ## Resolve
