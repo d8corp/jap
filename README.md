@@ -15,10 +15,10 @@ J.A.P. provides you running of all actions you need in one request via json.*
 
 `)`
 ## Resolve
-If all rules are followed and handler is finished without errors then the result will going
+If all rules are followed and handler is finished without errors then the result will go
 through resolve callback function.
 You will see all rules in this section.
-### `primitiveHandler`
+### jap(`primitiveHandler`)
 `primitiveHandler` is any primitive value of json `null`, `boolean`, `number` or `string`.  
 `jap` with `primitiveHandler` always returns the handler.
 ```javascript
@@ -28,14 +28,14 @@ jap(1) // returns 1
 jap(1.1) // returns 1.1
 jap('string') // returns 'string'
 ``` 
-### `handler`
+### jap(`handler`)
 `handler` is a function.  
 `jap` with `handler` always returns result of `handler`'s call.
 ```javascript
 jap(() => 1) // returns 1
 jap(() => {}) // returns undefined
 ``` 
-### `request`
+### jap(handler, `request`)
 `request` is the second argument of `jap`.  
 `request` is a parsed json from another app.  
 You may handle `request` by `handler`.  
@@ -44,7 +44,7 @@ You may handle `request` by `handler`.
 jap(x => x + x, 1) // returns 2
 jap(x => !x, true) // returns false
 ```
-### `requestCollection`
+### jap(handler, `requestCollection`)
 You may provide any count of arguments to `handler` by `requestCollection`.  
 `requestCollection` just is an array of arguments.
 ```javascript
