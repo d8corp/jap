@@ -6,7 +6,7 @@ J.A.P. provides you running of all actions you need in one request via json.*
 ### About `jap` function
 *The function helps you handle any J.A.P. request.*  
 `jap (`  
-- \[ [primitiveHandler](#primitiveHandler): json primitive | [handler](#handler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
+- \[ [primitiveHandler](#primitivehandler): json primitive | [handler](#handler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
 - \[, [request](#request): json primitive | [requestCollection](#requestCollection): array | [requestList](#requestList): object \]  
 - \[, [resolve](#resolve): function \]
 - \[, [reject](#reject): function \]
@@ -44,9 +44,9 @@ You may handle `request` by `handler`.
 jap(x => x + x, 1) // returns 2
 jap(x => !x, true) // returns false
 ```
-### `requestList`
-You may provide to `handler` any count of arguments by `requestList`.  
-`requestList` just is array of arguments.
+### `requestCollection`
+You may provide any count of arguments to `handler` by `requestCollection`.  
+`requestCollection` just is an array of arguments.
 ```javascript
 const sum = (x, y) => x + y
 jap(sum, [1, 2]) // returns 3
