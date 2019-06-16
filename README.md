@@ -66,12 +66,6 @@ And finally we can look at [resolve](#resolve) in action
 const sum = (x, y) => x + y
 jap(sum, [1, 2], resolve) // returns {success: true, result: 3}
 ```
-### jap(handler, request, `resolve`)
-And finally we can look at [resolve](#resolve) in action
-```javascript
-const sum = (x, y) => x + y
-jap(sum, [1, 2], resolve) // returns {success: true, result: 3}
-```
 ### jap(`handlerCollection`, request, resolve)
 You may use an array of any handlers type as `handlerCollection`
 Each next handler gets result of handle before.
