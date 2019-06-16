@@ -84,11 +84,18 @@ function jap (handler, request, resolve, reject, promises, options) {
       })
     },
     array: function () {
-      const length = handler.length;
+      var length = handler.length;
+      var rejected = false;
       for (var i = 0; i < length; i++) {
-        request = jap(handler[i], request, resolve, reject, promises)
+        request = jap(handler[i], request, yes, function () {
+          rejected = true;
+          return reject.apply(this, arguments)
+        }, promises);
+        if (rejected) {
+          return request
+        }
       }
-      return request;
+      return resolve(request);
     },
     string: resolve,
     number: resolve,

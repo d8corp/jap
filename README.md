@@ -6,7 +6,7 @@ J.A.P. provides you running of all actions you need in one request via json.*
 ### About `jap` function
 *The function helps you handle any J.A.P. request.*  
 `jap (`  
-1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#handlerCollection): array | [handlerList](#handlerList): object \]
+1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#japhandlercollection-request-resolve): array | [handlerList](#handlerList): object \]
 2. \[, [request](#japhandler-request): json primitive | [requestCollection](#japhandler-requestCollection): array | [requestList](#requestList): object \]  
 3. \[, [resolve](#resolve): function \]
 4. \[, [reject](#reject): function \]
@@ -61,10 +61,24 @@ jap(sum, [1, 2]) // returns 3
 jap(sum, [3, 5]) // returns 8
 ```
 ### jap(handler, request, `resolve`)
-And now finally we can look at [resolve](#resolve) in action
+And finally we can look at [resolve](#resolve) in action
 ```javascript
 const sum = (x, y) => x + y
 jap(sum, [1, 2], resolve) // returns {success: true, result: 3}
+```
+### jap(handler, request, `resolve`)
+And finally we can look at [resolve](#resolve) in action
+```javascript
+const sum = (x, y) => x + y
+jap(sum, [1, 2], resolve) // returns {success: true, result: 3}
+```
+### jap(`handlerCollection`, request, resolve)
+You may use an array of any handlers type as `handlerCollection`
+Each next handler gets result of handle before.
+```javascript
+const sum = (x, y) => x + y
+const square = x => x * x
+jap([sum, square], [1, 2], resolve) // returns {success: true, result: 9}
 ```
 
 ## Reject
@@ -92,7 +106,8 @@ jap([undefined]) // returns null
 but if [handlerList](#handlerList) contains at last one right handler `jap` will return
 result of the lats of right handler
 ```javascript
-jap([undefined, 1, undefined]) // returns 1
+jap([undefined, 1]) // returns null
+jap([1, undefined]) // returns 1
 ```
 *wrong handlers call reject callback function but response will not contain theirs results*
 

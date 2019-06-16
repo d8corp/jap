@@ -23,6 +23,7 @@ describe('jap', () => {
       expect(jap([3, x => x * x])).toEqual(9);
       expect(jap([x => x * x, x => x + x], 3)).toEqual(18);
       expect(jap([x => x * x, [x => x + x]], 3)).toEqual(18);
+      expect(jap([(x, y) => x + y, x => x * x], [2, 1], result => ({success: true, result}))).toEqual({success: true, result: 9});
     });
     it('handler is an object', () => {
       const square = x => x * x;
@@ -64,7 +65,8 @@ describe('jap', () => {
       expect(jap(new class {} ())).toBe(null);
       expect(jap([])).toEqual(null);
       expect(jap([undefined])).toEqual(null);
-      expect(jap([undefined, 1, undefined, undefined])).toEqual(1);
+      expect(jap([undefined, 1])).toEqual(null);
+      expect(jap([1, undefined])).toEqual(1);
       expect(jap({})).toEqual(null);
     });
     it('wrong nesting', () => {
