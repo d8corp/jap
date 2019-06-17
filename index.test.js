@@ -52,6 +52,12 @@ describe('jap', () => {
       expect(jap(1, [], resolve)).toEqual({error: false, value: 1});
       expect(jap({sum: (x, y) => x + y}, {sum: [1, 2]}, resolve)).toEqual({sum: {error: false, value: 3}});
     });
+    it('requestList', () => {
+      const resolve = value => ({error: false, value});
+      expect(jap(1, {test: 2})).toEqual(1);
+      expect(jap(e => e, {test: 2})).toEqual({test: 2});
+      expect(jap(1, {test: 1}, resolve)).toEqual({error: false, value: 1});
+    });
   });
   describe('reject', () => {
     it('undeclared handler', () => {
