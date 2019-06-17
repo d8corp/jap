@@ -94,6 +94,45 @@ const core = {math, version: '1.0.0'}
 jap(core, {math: {square: 5}}) // returns {math: {square: 25}}
 jap(core, {math: {sum: [5, 7]}, version: null}) // returns {math: {sum: 12}, version: '1.0.0'}
 ```
+[resolve](#resolve) is using only for `primitiveHandler` or `handler`
+
+```javascript
+const response = JSON.stringify(jap(core, {math: {sum: [5, 7]}, version: null}, resolve))
+```
+returns
+```json
+{
+  "math": {
+    "sum": {
+      "success": true,
+      "result": 12
+    }
+  },
+  "version": {
+    "success": true,
+    "result": "1.0.0"
+  }
+}
+```
+You may pass it to response and handle the response on client by `jap`
+```javascript
+jap({
+  math: {
+    sum (data) {
+      if (data.success) {
+        console.log('set sum and update this information on the page', data.result)
+      }
+    }
+  },
+  version (data) {
+    if (data.success) {
+      console.log('update version and run all actions you need', data.result)
+    }
+  }
+}, JSON.parse(response))
+```
+
+> `jap` does not create new object, it changes `requestList`
 
 ## Reject
 If any rules are failed or handler is finished with an error then the result will go
