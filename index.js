@@ -102,7 +102,7 @@ function jap (handler, request, resolve, reject, promises, options) {
     boolean: resolve,
     null: resolve,
     other: function () {
-      return reject(request, Error('Missed handler'), handler);
+      return reject(request, Error('Undeclared handler'), handler);
     }
   }, options);
 }

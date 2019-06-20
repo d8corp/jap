@@ -6,8 +6,8 @@ J.A.P. provides you running of all actions you need in one request via json.*
 ### About `jap` function
 *The function helps you handle any J.A.P. request.*  
 `jap (`  
-1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#japhandlercollection-request-resolve): array | [handlerList](#japhandlerlist-requestlist): object \]
-2. \[, [request](#japhandler-request): json primitive | [requestCollection](#japhandler-requestCollection): array | [requestList](#japhandlerlist-requestlist): object \]  
+1. \[ [primitiveHandler](#japprimitivehandler): json primitive | [handler](#japhandler): function | [handlerCollection](#japhandlercollection-request-resolve): array | [handlerList](#japhandlerlist-requestlist): object \]: parsed JSON with functions
+2. \[, [request](#japhandler-request): json primitive | [requestCollection](#japhandler-requestCollection): array | [requestList](#japhandlerlist-requestlist): object \]: parsed JSON  
 3. \[, [resolve](#resolve): function \]
 4. \[, [reject](#reject): function \]
 5. \[, [promises](#promises): array \]
@@ -137,7 +137,13 @@ jap({
 ## Reject
 If any rules are failed or handler is finished with an error then the result will go
 through reject callback function.
-You will see all rules for that in this section.
+You will see all rules for that in this section.  
+Default reject callback function is `request => request`.  
+`reject` gets 3 default arguments: `request`, `error` and `handler`.  
+Lets keep our default reject function here
+```javascript
+const reject = (request, error, handler) => ({error: error, request, handler})
+```
 ### Wrong handler
 If your handler is not matched with [primitiveHandler](#primitiveHandler), [handler](#handler), [handlerCollection](#handlerCollection) or [handlerList](#handlerList)
 then `jap` returns `null` (`null` is default request)
@@ -150,6 +156,30 @@ jap(new class {} ()) // returns null
 jap(Error('test')) // returns null
 jap(NaN, 'test') // returns 'test'
 ``` 
+And you get an error with message `Undeclared handler` 
+```javascript
+jap(undefined, true, undefined, reject)
+
+// jap returns
+return {
+  error: Error('Undeclared handler'),
+  request: true,
+  handler: undefined
+}
+```
+### Wrong request
+If your `request` is not parsed JSON and `handler` is `handlerList` then you get an error with message `Undeclared request`
+```javascript
+jap({}, NaN, undefined, reject)
+
+// jap returns
+return {
+  error: Error('Undeclared request'),
+  request: NaN,
+  handler: {}
+}
+```
+---
 Empty [handlerList](#handlerList) or [handlerList](#handlerList) contains only wrong handlers
 also returns `null`
 ```javascript

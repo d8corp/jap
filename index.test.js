@@ -81,6 +81,8 @@ describe('jap', () => {
     it('reject argument', () => {
       const reject = (request, error, handler) => ({error: error || true, request, handler});
       const settings = {version: '1.0.0'};
+      expect(jap(undefined, true, undefined, reject)).toEqual({error: Error('Undeclared handler'), request: true, handler: undefined});
+      expect(jap({}, NaN, undefined, reject)).toEqual({error: Error('Undeclared request'), request: NaN, handler: {}});
       expect(jap({settings}, {settings: null}, undefined, reject)).toEqual({settings: {error: Error('Undeclared request'), request: null, handler: settings}});
     });
   });
