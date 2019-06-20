@@ -80,6 +80,7 @@ jap([sum, square], [1, 2], resolve) // returns {success: true, result: 9}
 ```
 ### jap(`handlerList`, `requestList`)
 `handlerList` works only with `requestList`. They booth are objects.  
+You may see whats happen if `handlerList` runs without `requestList` [here](#wrong-request)  
 fields of `handlerList` are any handler type and fields of `requestList` are any request type.
 ```javascript
 const sum = (x, y) => x + y
@@ -168,7 +169,7 @@ return {
 }
 ```
 ### Wrong request
-If your `request` is not parsed JSON and `handler` is `handlerList` then you get an error with message `Undeclared request`
+If your `handler` is `handlerList` and `request` is not `requestList` then you get an error with message `Undeclared request`
 ```javascript
 jap({}, NaN, undefined, reject)
 
