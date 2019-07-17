@@ -1,6 +1,6 @@
 {
   "name": "jap",
-  "version": "0.0.1-dev",
+  "version": "1.0.0",
   "description": "JSON Action Protocol",
   "main": "src/jap.js",
   "scripts": {
