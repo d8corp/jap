@@ -11,7 +11,6 @@ J.A.P. provides you running of all actions you need in one request via json.*
 3. \[, [resolve](#resolve): function \]
 4. \[, [reject](#reject): function \]
 5. \[, [promises](#promises): array \]
-6. \[, [options](#options): object \]
 
 `)`
 ## Resolve
@@ -143,7 +142,7 @@ Default reject callback function is `request => request`.
 `reject` gets 3 default arguments: `request`, `error` and `handler`.  
 Lets keep our default reject function here
 ```javascript
-const reject = (request, error, handler) => ({error: error, request, handler})
+const reject = (request, error, handler) => ({error, request, handler})
 ```
 ### Wrong handler
 If your handler is not matched with [primitiveHandler](#primitiveHandler), [handler](#handler), [handlerCollection](#handlerCollection) or [handlerList](#handlerList)
@@ -180,22 +179,36 @@ return {
   handler: {}
 }
 ```
----
-Empty [handlerList](#handlerList) or [handlerList](#handlerList) contains only wrong handlers
-also returns `null`
+### Wrong handlerCollection
+If [handlerCollection](#handlerCollection) contains wrong handler then `jap` stops handling on wrong element and returns request or the last result of success [handlerCollection](#handlerCollection)'s element as `request`
 ```javascript
-jap([]) // returns null
-jap([undefined]) // returns null
+jap([1, undefined], 2, undefined, reject)
+// returns {error: Error('Undeclared handler'), request: 1, handler: undefined}
 ```
-but if [handlerList](#handlerList) contains at last one right handler `jap` will return
-result of the lats of right handler
+> empty `handlerCollection` is legal handler which goes through [resolve](#resolve)
+### Promises
+You may use async handlers, all promises returned the handlers will be added to the last argument of `jap`
 ```javascript
-jap([undefined, 1]) // returns null
-jap([1, undefined]) // returns 1
-```
-*wrong handlers call reject callback function but response will not contain theirs results*
+const handler = {
+  test1: async e => {
+      await new Promise(resolve => setTimeout(resolve, 10))
+      return e
+    },
+  test2: async () => {
+    throw Error('test')
+  }
+}
 
+const promises = []
 
-```javascript
-jap({}) // returns null
+const result = jap(handler, {test1: 1, test2: 2}, resolve, reject, promises)
+
+// promises.length equals 2
+// result.test1 is promise
+// result.test1 === promises[0]
+
+Promise.all(promises).then(() => {
+  // result.test1 is {error: false, value: 1}
+  // result.test2 is {error: Error('test'), request: 2, handler: handler.test2}
+})
 ```

@@ -1,5 +1,8 @@
 /* global it, describe, expect, jest */
-const jap = require('./index');
+const jap = require('./jap');
+
+const resolve = value => ({error: false, value});
+const reject = (request, error, handler) => ({request, error, handler});
 
 describe('jap', () => {
   describe('resolve', () => {
@@ -73,10 +76,35 @@ describe('jap', () => {
       expect(jap([undefined])).toEqual(null);
       expect(jap([undefined, 1])).toEqual(null);
       expect(jap([1, undefined])).toEqual(1);
+      expect(jap([1, undefined, 2])).toEqual(1);
+      expect(jap([1, Symbol(), 2])).toEqual(1);
       expect(jap({})).toEqual(null);
+
+      expect(jap([1, undefined], null, resolve, reject)).toEqual({
+        error: Error('Undeclared handler'),
+        handler: undefined,
+        request: 1
+      });
+      expect(jap([], null, resolve, reject)).toEqual({
+        error: false,
+        value: null
+      });
     });
     it('wrong nesting', () => {
       expect(jap({settings: {version: '1.0.0'}}, {settings: null})).toEqual({settings: null});
+      expect(jap({settings: {version: '1.0.0'}, test: 'passed'}, {settings: null, test: null}, resolve, reject)).toEqual({
+        settings: {
+          error: Error('Undeclared request'),
+          handler: {
+            version: '1.0.0'
+          },
+          request: null
+        },
+        test: {
+          error: false,
+          value: 'passed'
+        }
+      });
     });
     it('reject argument', () => {
       const reject = (request, error, handler) => ({error: error || true, request, handler});
@@ -88,14 +116,10 @@ describe('jap', () => {
   });
   describe('async', () => {
     it('function', async () => {
-      const resolve = value => ({error: false, value});
-      const reject = (request, error, handler) => ({request, error, handler});
-
       const handler1 = async e => {
         await new Promise(resolve => setTimeout(resolve, 10));
-        return e
+        return e + e
       };
-
       const handler2 = async () => {
         throw Error('test')
       };
@@ -105,7 +129,7 @@ describe('jap', () => {
 
       expect(result1).toEqual({
         error: false,
-        value: 1
+        value: 2
       });
       expect(result2).toEqual({
         error: Error('test'),
@@ -114,8 +138,6 @@ describe('jap', () => {
       });
     });
     it('object', async () => {
-      const resolve = value => ({error: false, value});
-      const reject = (request, error, handler) => ({request, error, handler});
 
       const handler = {
         test1: async e => {
