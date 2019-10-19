@@ -212,3 +212,186 @@ Promise.all(promises).then(() => {
   // result.test2 is {error: Error('test'), request: 2, handler: handler.test2}
 })
 ```
+
+## TODO example
+### `static/index.html`
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="client.js"></script>
+  <script src="jap.js"></script>
+  <title>JAP | TODO</title>
+</head>
+<body>
+  <div class="todo-list"></div>
+  <form class="todo-add">
+    <input type="text" class="todo-title">
+    <button>
+      Add
+    </button>
+  </form>
+  <button class="todo-clear">
+    clear
+  </button>
+</body>
+</html>
+```
+### `server.js`
+```javascript
+const express = require('express')
+const jap = require('jap')
+const Core = require('./core.js')
+
+const port = 3000
+const app = express()
+const core = new Core()
+
+app.use(express.static('static'))
+app.use(express.json())
+
+function resolve (value = null) {
+  return {
+    success: true,
+    value
+  }
+}
+
+function reject (id, e) {
+  if (e.message === 'todo is not found') {
+    return {error: e.message, id}
+  }
+  return {error: e.message}
+}
+
+app.post('/', (req, res) => res.end(JSON.stringify(jap(core, req.body, resolve, reject))))
+
+app.listen(port, err => err ? console.log('something bad happened', err) : console.log(`server is listening on ${port}`))
+```
+### `core.js`
+```javascript
+class Core {
+  constructor () {
+    this._todos = []
+  }
+  todos () {
+    return this._todos
+  }
+  add (title) {
+    if (!title) {
+      throw Error('please provide some title')
+    }
+    const todo = {id: `${Date.now()}${Math.random()}`, title, done: false}
+    this._todos.push(todo)
+    return todo
+  }
+  delete (id) {
+    let i = 0
+    for (const todo of this._todos) {
+      if (todo.id === id) {
+        return this._todos.splice(i, 1)[0]
+      }
+      i++
+    }
+    throw Error('todo is not found')
+  }
+  toggle (id) {
+    for (const todo of this._todos) {
+      if (todo.id === id) {
+        return {id, done: todo.done = !todo.done}
+      }
+    }
+    throw Error('todo is not found')
+  }
+  clear () {
+    this._todos = []
+  }
+}
+
+module.exports = Core
+```
+### `static/client.js`
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  const todoList = document.querySelector('.todo-list')
+  const todoTitle = document.querySelector('.todo-title')
+
+  document.querySelector('.todo-add').addEventListener('submit', e => {
+    e.preventDefault()
+    const title = todoTitle.value
+    todoTitle.value = ''
+    if (title) {
+      request({add: title})
+    }
+  })
+  document.querySelector('.todo-clear').onclick = () => {
+    request({clear: true})
+  }
+
+  let todos = {}
+
+  const core = {
+    todos ({success, value}) {
+      if (success) {
+        todoList.innerHTML = ''
+        todos = []
+        for (const todo of value) {
+          this.add({success: true, value: todo})
+        }
+      }
+    },
+    add ({success, value}) {
+      if (success) {
+        const todoElement = document.createElement('div')
+        const doneElement = document.createElement('input')
+        const titleElement = document.createElement('span')
+        const removeElement = document.createElement('button')
+        doneElement.type = 'checkbox'
+        doneElement.checked = value.done
+        todoElement.done = doneElement
+        doneElement.onchange = () => request({toggle: value.id})
+        titleElement.innerText = value.title
+        removeElement.onclick = () => request({remove: value.id})
+        removeElement.innerText = 'remove'
+        todoElement.appendChild(doneElement)
+        todoElement.appendChild(titleElement)
+        todoElement.appendChild(removeElement)
+        todoList.appendChild(todoElement)
+        todos[value.id] = todoElement
+      }
+    },
+    delete ({success, value}) {
+      if (success) {
+        todos[value.id].remove()
+      }
+    },
+    clear ({success}) {
+      if (success) {
+        for (const todo in todos) {
+          todos[todo].remove()
+        }
+        todos = []
+      }
+    },
+    toggle ({error, id}) {
+      if (error) {
+        todos[id].done.checked = !todos[id].done.checked
+      }
+    }
+  }
+
+  function request (body) {
+    return fetch('/', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).then(data => data.json()).then(data => jap(core, data))
+  }
+
+  request({todos: null})
+})
+```

@@ -1,8 +1,8 @@
 {
   "name": "jap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JSON Action Protocol",
-  "main": "src/jap.js",
+  "main": "jap.js",
   "scripts": {
     "test": "react-scripts test"
   },
@@ -20,11 +20,5 @@
   "bugs": {
     "url": "https://github.com/d8corp/jap/issues"
   },
-  "homepage": "https://github.com/d8corp/jap#readme",
-  "dependencies": {
-    "type-filter": "^3.5.1"
-  },
-  "devDependencies": {
-    "react-scripts": "3.0.1"
-  }
+  "homepage": "https://github.com/d8corp/jap#readme"
 }
