@@ -192,7 +192,7 @@ Promise.all(promises).then(() => {
 ```
 
 ## TODO example
-You may look at real example with:
+You may look at real example.
 ```bash
 git clone https://github.com/d8corp/jap.git
 cd jap

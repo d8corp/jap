@@ -1,5 +1,5 @@
 /* global it, describe, expect, jest */
-const jap = require('./jap');
+import jap from '.'
 
 const resolve = value => ({error: false, value});
 const reject = (request, error, handler) => ({request, error, handler});
@@ -7,48 +7,49 @@ const reject = (request, error, handler) => ({request, error, handler});
 describe('jap', () => {
   describe('resolve', () => {
     it('handler is a primitive', () => {
-      expect(jap(null)).toBe(null);
-      expect(jap(true)).toBe(true);
-      expect(jap(1)).toBe(1);
-      expect(jap(2.5)).toBe(2.5);
-      expect(jap('v1.0.0')).toBe('v1.0.0');
+      expect(jap(null)).toEqual({success: true, data: null});
+      expect(jap(true)).toEqual({success: true, data: true});
+      expect(jap(1)).toEqual({success: true, data: 1});
+      expect(jap(2.5)).toEqual({success: true, data: 2.5});
+      expect(jap('v1.0.0')).toEqual({success: true, data: 'v1.0.0'});
     });
     it('handler is a function', () => {
-      expect(jap(() => 1)).toEqual(1);
-      expect(jap(x => x * x, 3)).toBe(9);
-      expect(jap(x => `x: ${x}`, 'test')).toBe('x: test');
-      expect(jap(x => !x, true)).toBe(false);
-      expect(jap(x => x(), () => 'test')).toBe('test');
+      expect(jap(() => {})).toEqual({success: true, data: null});
+      expect(jap(() => 1)).toEqual({success: true, data: 1});
+      expect(jap(x => x * x, 3)).toEqual({success: true, data: 9});
+      expect(jap(x => `x: ${x}`, 'test')).toEqual({success: true, data: 'x: test'});
+      expect(jap(x => !x, true)).toEqual({success: true, data: false});
+      expect(jap(x => x(), () => 'test')).toEqual({success: true, data: 'test'});
     });
     it('handler is an array', () => {
-      expect(jap([1])).toEqual(1);
-      expect(jap([1, 2])).toEqual(2);
-      expect(jap([3, x => x * x])).toEqual(9);
-      expect(jap([x => x * x, x => x + x], 3)).toEqual(18);
-      expect(jap([x => x * x, [x => x + x]], 3)).toEqual(18);
+      expect(jap([1])).toEqual({success: true, data: 1});
+      expect(jap([1, 2])).toEqual({success: true, data: 2});
+      expect(jap([3, x => x * x])).toEqual({success: true, data: 9});
+      expect(jap([x => x * x, x => x + x], 3)).toEqual({success: true, data: 18});
+      expect(jap([x => x * x, [x => x + x]], 3)).toEqual({success: true, data: 18});
       expect(jap([(x, y) => x + y, x => x * x], [2, 1], result => ({success: true, result}))).toEqual({success: true, result: 9});
     });
     it('handler is an object', () => {
       const square = x => x * x;
       const double = x => x + x;
-      expect(jap({test: 1}, {test: null})).toEqual({test: 1});
-      expect(jap({square}, {square: 3})).toEqual({square: 9});
-      expect(jap({settings: {version: '1.0.0'}}, {settings: {version: null}})).toEqual({settings: {version: '1.0.0'}});
-      expect(jap({double: [x => x | 0, double]}, {double: '3'})).toEqual({double: 6});
-      expect(jap({double: [x => x | 0, double], square}, {double: '4', square: '3'})).toEqual({double: 8, square: 9});
+      expect(jap({test: 1}, {test: null})).toEqual({test: {success: true, data: 1}});
+      expect(jap({square}, {square: 3})).toEqual({square: {success: true, data: 9}});
+      expect(jap({settings: {version: '1.0.0'}}, {settings: {version: null}})).toEqual({settings: {version: {success: true, data: '1.0.0'}}});
+      expect(jap({double: [x => x | 0, double]}, {double: '3'})).toEqual({double: {success: true, data: 6}});
+      expect(jap({double: [x => x | 0, double], square}, {double: '4', square: '3'})).toEqual({double: {success: true, data: 8}, square: {success: true, data: 9}});
       const addOne = x => x + 1;
-      expect(jap([{test: addOne}, {test: addOne}], {test: 3})).toEqual({test: 5});
-      expect(jap([{test: addOne}, {test: addOne}, 1], {test: 3})).toEqual(1);
+      expect(jap([{test: addOne}, {test: addOne}], {test: 3})).toEqual({data: {test: 5}, success: true});
+      expect(jap([{test: addOne}, {test: addOne}, 1], {test: 3})).toEqual({success: true, data: 1});
     });
     it('request spreading', () => {
-      expect(jap(1, [])).toBe(1);
-      expect(jap((x, y) => x + y, [1, 2])).toBe(3);
-      expect(jap({sum: (x, y) => x + y}, {sum: [1, 2]})).toEqual({sum: 3});
+      expect(jap(1, [])).toEqual({success: true, data: 1});
+      expect(jap((x, y) => x + y, [1, 2])).toEqual({success: true, data: 3});
+      expect(jap({sum: (x, y) => x + y}, {sum: [1, 2]})).toEqual({sum: {success: true, data: 3}});
       expect(jap({sum: [
         (...a) => a.map(x => x | 0),
         (x, y) => x + y
-      ]}, {sum: ['1', '2']})).toEqual({sum: 3});
-      expect(jap([x => [x | 0, x % 1 * 100 | 0], (ceil, decimal) => ({ceil, decimal})], 3.141)).toEqual({ceil: 3, decimal: 14});
+      ]}, {sum: ['1', '2']})).toEqual({sum: {success: true, data: 3}});
+      expect(jap([x => [x | 0, x % 1 * 100 | 0], (ceil, decimal) => ({ceil, decimal})], 3.141)).toEqual({success: true, data: {ceil: 3, decimal: 14}});
     });
     it('resolve argument', () => {
       const resolve = value => ({error: false, value});
@@ -57,30 +58,24 @@ describe('jap', () => {
     });
     it('requestList', () => {
       const resolve = value => ({error: false, value});
-      expect(jap(1, {test: 2})).toEqual(1);
-      expect(jap(e => e, {test: 2})).toEqual({test: 2});
+      expect(jap(1, {test: 2})).toEqual({success: true, data: 1});
+      expect(jap(e => e, {test: 2})).toEqual({success: true, data: {test: 2}});
       expect(jap(1, {test: 1}, resolve)).toEqual({error: false, value: 1});
     });
   });
   describe('reject', () => {
     it('undeclared handler', () => {
-      expect(jap()).toBe(null);
-      expect(jap(undefined)).toBe(null);
-      expect(jap(NaN)).toBe(null);
-      expect(jap(Symbol())).toBe(null);
-      expect(jap(new Map())).toBe(null);
-      expect(jap(new Set())).toBe(null);
-      expect(jap(Error('test'))).toBe(null);
-      expect(jap(new class {} ())).toBe(null);
-      expect(jap([])).toEqual(null);
-      expect(jap([undefined])).toEqual(null);
-      expect(jap([undefined, 1])).toEqual(null);
-      expect(jap([1, undefined])).toEqual(1);
-      expect(jap([1, undefined, 2])).toEqual(1);
-      expect(jap([1, Symbol(), 2])).toEqual(1);
-      expect(jap({})).toEqual(null);
+      expect(jap()).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap(undefined)).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap(NaN)).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap(Symbol())).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap([undefined])).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap([undefined, 1])).toEqual({error: 'Undeclared handler', data: null});
+      expect(jap([1, undefined])).toEqual({error: 'Undeclared handler', data: 1});
+      expect(jap([1, undefined, 2])).toEqual({error: 'Undeclared handler', data: 1});
+      expect(jap([1, Symbol(), 2])).toEqual({error: 'Undeclared handler', data: 1});
 
-      expect(jap([1, undefined], null, resolve, reject)).toEqual({
+      expect(jap([1, undefined], null, true, reject)).toEqual({
         error: Error('Undeclared handler'),
         handler: undefined,
         request: 1
@@ -90,8 +85,11 @@ describe('jap', () => {
         value: null
       });
     });
+    it('undeclared request', () => {
+      expect(jap({})).toEqual({error: 'Undeclared request', data: null});
+    });
     it('wrong nesting', () => {
-      expect(jap({settings: {version: '1.0.0'}}, {settings: null})).toEqual({settings: null});
+      expect(jap({settings: {version: '1.0.0'}}, {settings: null})).toEqual({settings: {error: 'Undeclared request', data: null}});
       expect(jap({settings: {version: '1.0.0'}, test: 'passed'}, {settings: null, test: null}, resolve, reject)).toEqual({
         settings: {
           error: Error('Undeclared request'),
