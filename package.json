@@ -1,12 +1,15 @@
 {
   "name": "jap",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "JSON Action Protocol",
   "main": "index.js",
+  "module": "module.js",
+  "browser": "browser.js",
   "private": true,
   "scripts": {
     "build": "bin/release -rollup",
-    "start": "cd todo && node server.js",
+    "test": "jest src/index.test.ts",
+    "start": "cd todo && node index.js",
     "patch": "bin/release -patch -rollup",
     "minor": "bin/release -minor -rollup",
     "major": "bin/release -major -rollup"
@@ -20,30 +23,25 @@
     "REST",
     "API"
   ],
-  "author": "deight",
+  "author": "Mikhail Lysikov",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/d8corp/jap/issues"
   },
   "homepage": "https://github.com/d8corp/jap#readme",
-  "dependencies": {
-    "core-js": "^2.6.10"
-  },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-syntax-jsx": "^7.2.0",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/plugin-transform-runtime": "^7.6.2",
-    "@babel/preset-env": "^7.6.3",
-    "@d8corp/jap-express": "^1.0.0",
-    "babel-preset-minify": "^0.5.1",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.8.3",
+    "@types/jest": "^24.9.0",
+    "babel-jest": "^24.9.0",
     "express": "^4.17.1",
-    "react-scripts": "^3.2.0",
+    "jap-express": "^1.1.0",
+    "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "rollup": "^1.25.1",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0"
+    "rollup": "^1.29.0",
+    "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "typescript": "^3.7.5"
   }
 }

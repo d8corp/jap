@@ -3,6 +3,72 @@
 *You may use it on server and browser side or native apps, anywhere.  
 This is just an idea how we can run actions of other apps from our.  
 J.A.P. provides you running of all actions you need in one request via json.*
+####Request example
+```json
+{
+  "user": {
+    "icon": "small",
+    "balance": "all",
+    "properties": ["name", "age"],
+    "test": false
+  },
+  "payment": {
+    "methods": [0, 2]
+  },
+  "cart": {
+    "count": null,
+    "items": 4
+  }
+}
+```
+####Response for the example
+```json
+{
+  "user": {
+    "icon": {
+      "success": true,
+      "data": "/img/...jpg"
+    },
+    "balance": {
+      "success": true,
+      "data": {
+        "cash": 420,
+        "points": 13
+      }
+    },
+    "properties": {
+      "success": true,
+      "data": {
+        "name": "Mike",
+        "age": 42
+      }
+    },
+    "test": {
+      "error": "Undeclared handler",
+      "data": false
+    }
+  },
+  "payment": {
+    "methods": {
+      "success": true,
+      "data": [
+        {"id": 7, "type": "html"},
+        {"id": 12, "type": "iframe"}
+      ]
+    }
+  },
+  "cart": {
+    "count": {
+      "success": true,
+      "data": 4
+    },
+    "items": {
+      "error": "The item is not found",
+      "data": 4
+    }
+  }
+}
+```
 ### About `jap` function
 *The function helps you handle any J.A.P. request.*  
 `jap (`  

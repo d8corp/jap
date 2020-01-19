@@ -2,6 +2,7 @@
 const fs = require('fs')
 const rimraf = require('rimraf')
 const {exec} = require('child_process')
+const packageJSON = require('../package')
 
 const deep = []
 
@@ -13,22 +14,18 @@ start()
 async function start () {
   consoleStart('deploying')
   await removeFiles()
-  await babelUsage()
   await rollUpUsage()
   await Promise.all([
+    copyTS(),
     copyLicense(),
     copyPackage(),
     copyReadme()
   ])
+  await copyForTodo()
   await publish()
   consoleEnd('deploying')
 }
 // steps
-async function babelUsage () {
-  consoleStart('converting js files')
-  await getPromise(resolve => exec(`npx babel ${sourceDir} -d ${releaseDir}`, {}, resolve))
-  consoleEnd('converting js files')
-}
 async function rollUpUsage () {
   if (process.argv.includes('-rollup')) {
     consoleStart('converting js for browsers')
@@ -52,9 +49,18 @@ async function copyLicense () {
   await getPromise(resolve => fs.copyFile(__dirname + '/../LICENSE', releaseDir + '/LICENSE', 'utf8', resolve))
   consoleEnd('copying license')
 }
+async function copyTS () {
+  consoleStart('copying original type script file')
+  await getPromise(resolve => fs.copyFile(__dirname + '/../src/index.ts', releaseDir + '/index.ts', 'utf8', resolve))
+  consoleEnd('copying original type script file')
+}
+async function copyForTodo () {
+  consoleStart('copying jap for todo')
+  await getPromise(resolve => fs.copyFile(releaseDir + '/' + packageJSON.browser, __dirname + '/../todo/client/jap.js', 'utf8', resolve))
+  consoleEnd('copying jap for todo')
+}
 async function copyPackage () {
   consoleStart('copying package.json')
-  const packageJSON = require('../package')
   const version = packageJSON.version.split('.')
   if (process.argv.includes('-patch')) {
     version[2]++

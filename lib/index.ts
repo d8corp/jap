@@ -1,54 +1,55 @@
 const yes = e => e
 
-/**
- * @param {*} data
- * @return {{success: boolean, data: *}}
- * */
-const defaultResolve = (data = null) => ({
-  success: true,
-  data
-})
-
-
-/**
- * @param {*} data
- * @param {Error} error
- * @param {*} handler
- * @return {{error: string, data}}
- * */
-const defaultReject = (data = null, error, handler) => ({
-  error: error.message,
-  data
-})
-
-
-/**
- * @param {*} [handler]
- * @param {*} [request]
- * @param {function(data)|boolean} [resolve = defaultResolve]
- * @param {function(request, error:Error, handler)|boolean} [reject]
- * @param {Array<Promise>} [promises]
- * @param {*} [context]
- * */
-function jap (handler, request = null, resolve = defaultResolve, reject = defaultReject, promises, context = this) {
-  if (resolve === false) {
-    resolve = yes
-  } else if (resolve === true) {
-    resolve = defaultResolve
+export type defaultResolveResult = {
+  success: boolean,
+  data: requestType
+}
+export function defaultResolve (data: requestType = null): defaultResolveResult {
+  return {
+    success: true,
+    data
   }
-  if (reject === false) {
-    reject = yes
-  } else if (reject === true) {
-    reject = defaultReject
+}
+
+export type defaultRejectResult = {
+  error: string,
+  data: requestType
+}
+export function defaultReject (data: requestType, error: Error): defaultRejectResult {
+  return {
+    error: error.message,
+    data
   }
+}
 
-  const handlerType = typeof handler
+export type simpleType = boolean | number | string | null
 
-  if (handlerType === 'boolean' || (handlerType === 'number' && !isNaN(handler)) || handlerType === 'string') {
+export type handlerType = simpleType | ((...data: any) => requestType) | {[key: string]: handlerType} | handlerType[] | ((...data: any) => Promise<requestType>)
+export type requestType = simpleType | {[key: string]: requestType} | requestType[]
+
+export type resolveHandler = (data: requestType) => requestType
+export type resolveArgumentOfJap = boolean | resolveHandler
+
+export type rejectHandler = ((data: requestType, error: Error, handler: handlerType) => requestType)
+export type rejectArgumentOfJap = boolean | rejectHandler
+
+export default function jap (
+  handler: handlerType,
+  request: requestType = null,
+  resolveRaw: resolveArgumentOfJap = defaultResolve,
+  rejectRaw: rejectArgumentOfJap = defaultReject,
+  promises?: Promise<requestType>[],
+  context: any = this
+) {
+  const resolve: resolveHandler = typeof resolveRaw !== 'boolean' ? resolveRaw : resolveRaw ? defaultResolve : yes
+
+  if (typeof handler === 'boolean' || (typeof handler === 'number' && !isNaN(handler)) || typeof handler === 'string') {
     return resolve(handler)
   }
 
-  if (handlerType === 'function') {
+  const reject: rejectHandler = typeof rejectRaw !== 'boolean' ? rejectRaw : rejectRaw ? defaultReject : yes
+
+  if (typeof handler === 'function') {
     let result
     try {
       if (request instanceof Array) {
@@ -68,9 +69,7 @@ function jap (handler, request = null, resolve = defaultResolve, reject = defaul
     } catch (error) {
       return reject(request, error, handler)
     }
-  }
-
-  if (handlerType === 'object') {
+  } else if (typeof handler === 'object') {
     if (handler === null) {
       return resolve(null)
     }
@@ -116,5 +115,3 @@ function jap (handler, request = null, resolve = defaultResolve, reject = defaul
 
   return reject(request, Error('Undeclared handler'), handler);
 }
-
-export default jap

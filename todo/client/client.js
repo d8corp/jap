@@ -112,6 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(body)
-    }).then(data => data.json()).then(data => jap(api, data, false, false))
+    }).then(data => data.json()).then(data => jap.default(api, data, false, false))
   }
 })

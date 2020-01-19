@@ -1,8 +1,10 @@
 {
   "name": "jap",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "JSON Action Protocol",
   "main": "index.js",
+  "module": "module.js",
+  "browser": "browser.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/d8corp/jap.git"
@@ -12,13 +14,10 @@
     "REST",
     "API"
   ],
-  "author": "deight",
+  "author": "Mikhail Lysikov",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/d8corp/jap/issues"
   },
-  "homepage": "https://github.com/d8corp/jap#readme",
-  "dependencies": {
-    "core-js": "^2.6.10"
-  }
+  "homepage": "https://github.com/d8corp/jap#readme"
 }
