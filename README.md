@@ -21,7 +21,7 @@ J.A.P. provides you running of all actions you need in one request via json.*
   }
 }
 ```
-####Response for the example
+#### Response for the example
 ```json
 {
   "user": {
