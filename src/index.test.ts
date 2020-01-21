@@ -89,6 +89,13 @@ describe('jap', () => {
         error: false,
         value: null
       })
+      expect(jap({$test: 1}, {$test: null}, resolve, reject)).toEqual({
+        $test: {
+          error: Error('Undeclared handler'),
+          handler: {$test: 1},
+          request: null
+        }
+      })
     })
     it('undeclared request', () => {
       expect(jap({})).toEqual({error: 'Undeclared request', data: null});

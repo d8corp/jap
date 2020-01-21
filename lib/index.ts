@@ -30,7 +30,7 @@ export type requestType = simpleType | {[key: string]: requestType} | requestTyp
 export type resolveHandler = (data: requestType) => requestType
 export type resolveArgumentOfJap = boolean | resolveHandler
 
-export type rejectHandler = ((data: requestType, error: Error, handler: handlerType) => requestType)
+export type rejectHandler = ((data: requestType, error: Error, handler: handlerType, key?: string) => requestType)
 export type rejectArgumentOfJap = boolean | rejectHandler
 
 export default function jap (
@@ -97,7 +97,7 @@ export default function jap (
       for (const key in request) {
         const firstSymbol = key[0]
         if (key in Object.prototype || firstSymbol === '_' || firstSymbol === '$') {
-          request[key] = reject(request, Error('Undeclared handler'), handler)
+          request[key] = reject(request[key], Error('Undeclared handler'), handler, key)
           continue
         }
         const result = jap(handler[key], request[key], resolve, reject, promises, handler)

@@ -21,7 +21,7 @@ J.A.P. provides you running of all actions you need in one request via json.*
   }
 }
 ```
-####Response for the example
+#### Response for the example
 ```json
 {
   "user": {
@@ -199,6 +199,8 @@ jap({
 ```
 
 > `jap` does not create new object, it changes `requestList`
+
+> all keys starts from `_` or `$` are private and unavailable outside
 
 ## Reject
 If any rules are failed or handler is finished with an error then the result will go

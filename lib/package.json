@@ -1,6 +1,6 @@
 {
   "name": "jap",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "JSON Action Protocol",
   "main": "index.js",
   "module": "module.js",

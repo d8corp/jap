@@ -200,6 +200,8 @@ jap({
 
 > `jap` does not create new object, it changes `requestList`
 
+> all keys starts from `_` or `$` are private and unavailable outside
+
 ## Reject
 If any rules are failed or handler is finished with an error then the result will go
 through reject callback function.
